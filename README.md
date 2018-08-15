@@ -14,6 +14,7 @@ Features:
     - Phoenixcoin (PXC)
     - Feathercoin (FTC)
     - Vertical (VTL)
+    - PWR Coin (PWR)
 
 
 ## Create a Bot
