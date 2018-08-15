@@ -15,14 +15,14 @@ const bitcoin = require('bitcoin');
 let Regex = require('regex'),
   config = require('config'),
   spamchannels = config.get('moderation').botspamchannels;
-let walletConfig = config.get('ltc').config;
-let paytxfee = config.get('ltc').paytxfee;
-const ltc = new bitcoin.Client(walletConfig);
-exports.commands = ['tipltc'];
-exports.tipltc = {
+let walletConfig = config.get('pwr').config;
+let paytxfee = config.get('pwr').paytxfee;
+const pwr = new bitcoin.Client(walletConfig);
+exports.commands = ['tippwr'];
+exports.tippwr = {
   usage: '<subcommand>',
   description:
-    '__**Litecoin (LTC) Tipper**__\nTransaction Fees: **' + paytxfee + '**\n    **!tipltc** : Displays This Message\n    **!tipltc balance** : get your balance\n    **!tipltc deposit** : get address for your deposits\n    **!tipltc withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **!tipltc <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **!tipltc private <user> <amount>** : put private before Mentioning a user to tip them privately.\n\n    has a default txfee of ' + paytxfee,
+    '__**PWR Coin (PWR) Tipper**__\nTransaction Fees: **' + paytxfee + '**\n    **!tippwr** : Displays This Message\n    **!tippwr balance** : get your balance\n    **!tippwr deposit** : get address for your deposits\n    **!tippwr withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **!tippwr <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **!tippwr private <user> <amount>** : put private before Mentioning a user to tip them privately.\n\n    has a default txfee of ' + paytxfee,
   process: async function(bot, msg, suffix) {
     let tipper = msg.author.id.replace('!', ''),
       words = msg.content
@@ -33,7 +33,7 @@ exports.tipltc = {
         }),
       subcommand = words.length >= 2 ? words[1] : 'help',
       helpmsg =
-        '__**Litecoin (LTC) Tipper**__\nTransaction Fees: **' + paytxfee + '**\n    **!tipltc** : Displays This Message\n    **!tipltc balance** : get your balance\n    **!tipltc deposit** : get address for your deposits\n    **!tipltc withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **!tipltc <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **!tipltc private <user> <amount>** : put private before Mentioning a user to tip them privately.\n\n    **<> : Replace with appropriate value.**',
+        '__**PWR Coin (PWR) Tipper**__\nTransaction Fees: **' + paytxfee + '**\n    **!tippwr** : Displays This Message\n    **!tippwr balance** : get your balance\n    **!tippwr deposit** : get address for your deposits\n    **!tippwr withdraw <ADDRESS> <AMOUNT>** : withdraw coins to specified address\n    **!tippwr <@user> <amount>** :mention a user with @ and then the amount to tip them\n    **!tippwr private <user> <amount>** : put private before Mentioning a user to tip them privately.\n\n    **<> : Replace with appropriate value.**',
       channelwarning = 'Please use <#bot-spam> or DMs to talk to bots.';
     switch (subcommand) {
       case 'help':
@@ -66,10 +66,10 @@ function doHelp(message, helpmsg) {
 function doBalance(message, tipper) {
   ltc.getBalance(tipper, 1, function(err, balance) {
     if (err) {
-      message.reply('Error getting Litecoin (LTC) balance.').then(message => message.delete(10000));
+      message.reply('Error getting PWR Coin (PWR) balance.').then(message => message.delete(10000));
     } else {
     message.channel.send({ embed: {
-    description: '**:bank::money_with_wings::moneybag:Litecoin (LTC) Balance!:moneybag::money_with_wings::bank:**',
+    description: '**:bank::money_with_wings::moneybag:PWR Coin (PWR) Balance!:moneybag::money_with_wings::bank:**',
     color: 1363892,
     fields: [
       {
@@ -90,10 +90,10 @@ function doBalance(message, tipper) {
 function doDeposit(message, tipper) {
   getAddress(tipper, function(err, address) {
     if (err) {
-      message.reply('Error getting your Litecoin (LTC) deposit address.').then(message => message.delete(10000));
+      message.reply('Error getting your PWR Coin (PWR) deposit address.').then(message => message.delete(10000));
     } else {
     message.channel.send({ embed: {
-    description: '**:bank::card_index::moneybag:Litecoin (LTC) Address!:moneybag::card_index::bank:**',
+    description: '**:bank::card_index::moneybag:PWR Coin (PWR) Address!:moneybag::card_index::bank:**',
     color: 1363892,
     fields: [
       {
@@ -119,23 +119,23 @@ function doWithdraw(message, tipper, words, helpmsg) {
   var address = words[2],
     amount = getValidatedAmount(words[3]);
   if (amount === null) {
-    message.reply("I don't know how to withdraw that much Litecoin (LTC)...").then(message => message.delete(10000));
+    message.reply("I don't know how to withdraw that much PWR Coin (PWR)...").then(message => message.delete(10000));
     return;
   }
-  ltc.getBalance(tipper, 1, function(err, balance) {
+  pwr.getBalance(tipper, 1, function(err, balance) {
     if (err) {
-      message.reply('Error getting Litecoin (LTC) balance.').then(message => message.delete(10000));
+      message.reply('Error getting PWR Coin (PWR) balance.').then(message => message.delete(10000));
     } else {
       if (Number(amount) + Number(paytxfee) > Number(balance)) {
-        message.channel.send('Please leave atleast ' + paytxfee + ' Litecoin (LTC) for transaction fees!');
+        message.channel.send('Please leave atleast ' + paytxfee + ' PWR Coin (PWR) for transaction fees!');
         return;
       }
-      ltc.sendFrom(tipper, address, Number(amount), function(err, txId) {
+      pwr.sendFrom(tipper, address, Number(amount), function(err, txId) {
         if (err) {
           message.reply(err.message).then(message => message.delete(10000));
         } else {
         message.channel.send({embed:{
-        description: '**:outbox_tray::money_with_wings::moneybag:Litecoin (LTC) Transaction Completed!:moneybag::money_with_wings::outbox_tray:**',
+        description: '**:outbox_tray::money_with_wings::moneybag:PWR Coin (PWR) Transaction Completed!:moneybag::money_with_wings::outbox_tray:**',
         color: 1363892,
         fields: [
           {
@@ -183,15 +183,15 @@ function doTip(bot, message, tipper, words, helpmsg) {
   }
   let amount = getValidatedAmount(words[amountOffset]);
   if (amount === null) {
-    message.reply("I don't know how to tip that much Litecoin (LTC)...").then(message => message.delete(10000));
+    message.reply("I don't know how to tip that much PWR Coin (PWR)...").then(message => message.delete(10000));
     return;
   }
-  ltc.getBalance(tipper, 1, function(err, balance) {
+  pwr.getBalance(tipper, 1, function(err, balance) {
     if (err) {
-      message.reply('Error getting Litecoin (LTC) balance.').then(message => message.delete(10000));
+      message.reply('Error getting PWR Coin (PWR) balance.').then(message => message.delete(10000));
     } else {
       if (Number(amount) + Number(paytxfee) > Number(balance)) {
-        message.channel.send('Please leave atleast ' + paytxfee + ' Litecoin (LTC) for transaction fees!');
+        message.channel.send('Please leave atleast ' + paytxfee + ' PWR Coin (PWR) for transaction fees!');
         return;
       }
       if (!message.mentions.users.first()){
@@ -201,26 +201,26 @@ function doTip(bot, message, tipper, words, helpmsg) {
             return;
           }
       if (message.mentions.users.first().id) {
-        sendLTC(bot, message, tipper, message.mentions.users.first().id.replace('!', ''), amount, prv);
+        sendPWR(bot, message, tipper, message.mentions.users.first().id.replace('!', ''), amount, prv);
       } else {
         message.reply('Sorry, I could not find a user in your tip...').then(message => message.delete(10000));
       }
     }
   });
 }
-function sendLTC(bot, message, tipper, recipient, amount, privacyFlag) {
+function sendPWR(bot, message, tipper, recipient, amount, privacyFlag) {
   getAddress(recipient.toString(), function(err, address) {
     if (err) {
       message.reply(err.message).then(message => message.delete(10000));
     } else {
-          ltc.sendFrom(tipper, address, Number(amount), 1, null, null, function(err, txId) {
+          pwr.sendFrom(tipper, address, Number(amount), 1, null, null, function(err, txId) {
               if (err) {
                 message.reply(err.message).then(message => message.delete(10000));
               } else {
                 if (privacyFlag) {
                   let userProfile = message.guild.members.find('id', recipient);
                   userProfile.user.send({ embed: {
-                  description: '**:money_with_wings::moneybag:Litecoin (LTC) Transaction Completed!:moneybag::money_with_wings:**',
+                  description: '**:money_with_wings::moneybag:PWR Coin (PWR) Transaction Completed!:moneybag::money_with_wings:**',
                   color: 1363892,
                   fields: [
                     {
@@ -251,7 +251,7 @@ function sendLTC(bot, message, tipper, recipient, amount, privacyFlag) {
                   ]
                 } });
                 message.author.send({ embed: {
-                description: '**:money_with_wings::moneybag:Litecoin (LTC) Transaction Completed!:moneybag::money_with_wings:**',
+                description: '**:money_with_wings::moneybag:PWR Coin (PWR) Transaction Completed!:moneybag::money_with_wings:**',
                 color: 1363892,
                 fields: [
                   {
@@ -282,13 +282,13 @@ function sendLTC(bot, message, tipper, recipient, amount, privacyFlag) {
                 ]
               } });
                   if (
-                    message.content.startsWith('!tipltc private ')
+                    message.content.startsWith('!tippwr private ')
                   ) {
                     message.delete(1000); //Supposed to delete message
                   }
                 } else {
                   message.channel.send({ embed: {
-                  description: '**:money_with_wings::moneybag:Litecoin (LTC) Transaction Completed!:moneybag::money_with_wings:**',
+                  description: '**:money_with_wings::moneybag:PWR Coin (PWR) Transaction Completed!:moneybag::money_with_wings:**',
                   color: 1363892,
                   fields: [
                     {
@@ -325,13 +325,13 @@ function sendLTC(bot, message, tipper, recipient, amount, privacyFlag) {
   });
 }
 function getAddress(userId, cb) {
-  ltc.getAddressesByAccount(userId, function(err, addresses) {
+  pwr.getAddressesByAccount(userId, function(err, addresses) {
     if (err) {
       cb(err);
     } else if (addresses.length > 0) {
       cb(null, addresses[0]);
     } else {
-      ltc.getNewAddress(userId, function(err, address) {
+      pwr.getNewAddress(userId, function(err, address) {
         if (err) {
           cb(err);
         } else {
@@ -353,15 +353,15 @@ function isSpam(msg) {
 };
 function getValidatedAmount(amount) {
   amount = amount.trim();
-  if (amount.toLowerCase().endsWith('ltc')) {
+  if (amount.toLowerCase().endsWith('pwr')) {
     amount = amount.substring(0, amount.length - 3);
   }
   return amount.match(/^[0-9]+(\.[0-9]+)?$/) ? amount : null;
 }
 function txLink(txId) {
-  return 'http://Explorer-Url/tx/' + txId;
+  return 'https://blockexplorer.pwr-coin.com/tx/' + txId;
 }
 function addyLink(address) {
-  return 'http://Explorer-Url/address/' + address;
+  return 'https://blockexplorer.pwr-coin.com//address/' + address;
 }
 */
