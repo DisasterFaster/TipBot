@@ -64,7 +64,7 @@ function doHelp(message, helpmsg) {
   message.author.send(helpmsg);
 }
 function doBalance(message, tipper) {
-  ltc.getBalance(tipper, 1, function(err, balance) {
+  pwr.getBalance(tipper, 1, function(err, balance) {
     if (err) {
       message.reply('Error getting PWR Coin (PWR) balance.').then(message => message.delete(10000));
     } else {
