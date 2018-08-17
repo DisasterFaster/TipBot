@@ -15,6 +15,7 @@ Features:
     - Feathercoin (FTC)
     - Vertical (VTL)
     - PWR Coin (PWR)
+    - ROI Coin (ROI)
 
 
 ## Create a Bot
